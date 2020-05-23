@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>卡片组件使用例子</title>
+		<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+		<!-- 引入样式 -->
+		<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+		<link rel="stylesheet" href="../lib/myvue.css">
+		<!-- 引入组件库 -->
+		<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+		<script src="../lib/myvue.umd.js"></script>
+		<script src="../node_modules/mockjs/dist/mock.js"></script>
+		<style type="text/css">
+			body {
+				background-color: #e8eeec;
+				font-family: Chinese Quote, -apple-system, BlinkMacSystemFont, Segoe UI, PingFang SC, Hiragino Sans GB, Microsoft YaHei, Helvetica Neue, Helvetica, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div id="app">
+			<cardflag :option="option"></cardflag>
+		</div>
+	</body>
+
+	<script>
+		//开始生成测试数据
+		const demoData = [];
+        const base = parseInt(Math.random() * 60, 10) + 10;
+		const demoDataNum = 30;
+		for (let i = 0; i < demoDataNum; i++) {
+  			let likeNum = Mock.mock("@integer(1, 100)");
+  			let viewNum = Mock.mock("@integer(1000, 2000)");
+ 		 demoData.push({
+    		href: "http://www.163.com",
+    		url: `https://picsum.photos/id/${base + i}/300/200`,
+    		title: Mock.mock("@ctitle(2, 5)"),
+    		detail: Mock.mock("@cparagraph"),
+    		likeNum: `${likeNum}`,
+				viewNum: `${viewNum}`
+			});
+		}
+	new Vue({
+		el: '#app',
+		data() {
+		return {
+			option: {
+        likeClick: function(item, index) {
+          console.log("index:" + index);
+          console.log("item.likeNum:" + item.likeNum);
+          let i = parseInt(item.likeNum);
+          if (!isNaN(i)) {
+            i = i + 1;
+            item.likeNum = i;
+          }
+          console.log("点击收藏后:" + i);
+          this.$message.success("您点击了收藏:" + index);
+        },
+        gotoWeb: function(item, index) {
+          console.log(index);
+          item.viewNum++;
+        },
+        data: demoData,
+        gutter: 5
+	}
+			};
+			}
+		})
+	</script>
+</html>
