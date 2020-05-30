@@ -16,7 +16,6 @@
             :key="index"
             v-for="(tag, index) in dynamicTags"
             closable
-            :v-model="count"
             :disable-transitions="true"
             @close="CloseTag(tag)"
             >{{ tag.label }}</el-tag
@@ -68,6 +67,7 @@ for (let i = 0; i < demoDataNum; i++) {
     downloadNum: `${downloadNum}`
   });
 }
+
 export default {
   name: "App",
   data() {
@@ -84,49 +84,61 @@ export default {
           name: "筛选",
           screen: false
         },
-        peoples: [
-          { id: "", label: "全部" },
-          { id: 1, label: "没有人" },
-          { id: 2, label: "一个人" },
-          { id: 3, label: "两个人" },
-          { id: 4, label: "三个人" },
-          { id: 5, label: "一群人" }
-        ],
-        nations: [
-          { id: "", label: "全部" },
-          { id: 1, label: "中国人" },
-          { id: 2, label: "亚洲人" },
-          { id: 3, label: "东方人" },
-          { id: 4, label: "白色种人" },
-          { id: 5, label: "黑色种人" },
-          { id: 6, label: "混血儿" },
-          { id: 7, label: "中东人" }
-        ],
         sorts: [
           { id: "", label: "最佳匹配" },
           { id: 1, label: "最新上线" },
           { id: 2, label: "最热" }
         ],
         composes: [
-          { id: "", label: "全部", ico: "" },
+          { id: "0", label: "全部", ico: "" },
           { id: "1", label: "横向", ico: "cross" },
           { id: "2", label: "竖向", ico: "vertial" },
           { id: "3", label: "方形", ico: "square" },
-          { id: "4", label: "全景横向", ico: "" },
-          { id: "5", label: "全景竖向", ico: "" }
+          { id: "4", label: "全景横向", ico: "" }
         ],
-        ages: [
-          { id: "", label: "全部" },
-          { id: "1", label: "婴儿" },
-          { id: "2", label: "儿童" },
-          { id: "3", label: "少年" },
-          { id: "4", label: "青年" },
-          { id: "5", label: "中年" },
-          { id: "6", label: "老年" }
-        ],
-        sexuals: [
-          { id: "", label: "男" },
-          { id: "1", label: "女" }
+        titles: [
+          {
+            Titlename: "民族",
+            children: [
+              { Choicename: "全部", id: "0" },
+              { Choicename: "中国人", id: "1" },
+              { Choicename: "亚洲人", id: "2" },
+              { Choicename: "东方人", id: "3" },
+              { Choicename: "白色人种", id: "4" },
+              { Choicename: "黑色人种", id: "5" },
+              { Choicename: "中东人", id: "6" }
+            ]
+          },
+          {
+            Titlename: "人数",
+            children: [
+              { Choicename: "全部", id: "0" },
+              { Choicename: "没有人", id: "1" },
+              { Choicename: "一个人", id: "2" },
+              { Choicename: "两个人", id: "3" },
+              { Choicename: "三个人", id: "4" },
+              { Choicename: "一群人", id: "5" }
+            ]
+          },
+          {
+            Titlename: "年龄",
+            children: [
+              { Choicename: "全部", id: "0" },
+              { Choicename: "婴儿", id: "1" },
+              { Choicename: "儿童", id: "2" },
+              { Choicename: "少年", id: "3" },
+              { Choicename: "青年", id: "4" },
+              { Choicename: "中年", id: "5" },
+              { Choicename: "老年", id: "6" }
+            ]
+          },
+          {
+            Titlename: "性别",
+            children: [
+              { Choicename: "男", id: "0" },
+              { Choicename: "女", id: "1" }
+            ]
+          }
         ],
         likeClick: function(item, index) {
           item.likeNum++;
@@ -154,15 +166,17 @@ export default {
       this.option.button.screen = !this.option.button.screen;
     },
     screenClick(val) {
-      this.dynamicTags.push({
-        label: val
-      });
-      if (val === "最佳匹配") {
-        console.log(val);
+      if (val.label === "最佳匹配") {
+        console.log(val.label);
         this.option.data = demoDataFir;
-      } else if (val === "最新上线") {
-        console.log(val);
+      } else if (val.label === "最新上线") {
+        console.log(val.label);
         this.option.data = demoDataSec;
+      }
+      if (this.dynamicTags.length <= 0) {
+        this.dynamicTags.push({
+          label: val.label
+        });
       }
     }
   },

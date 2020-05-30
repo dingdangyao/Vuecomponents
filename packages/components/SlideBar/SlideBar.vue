@@ -1,41 +1,42 @@
 <template>
   <div class="content">
-    <!--已选标签-->
     <!--筛选按钮-->
     <div class="ScreenBtn">
       <el-button
         type="info"
-        :class="[this.option.button.screen ? 'button-unfold' : 'button-fold']"
-        @click="screen"
+        :class="[screen ? 'button-unfold' : 'button-fold']"
+        @click="screenMenu"
         >筛选
         <i class="el-icon-set-up"></i>
       </el-button>
     </div>
-    <!--已选标签-->
     <!--抽屉部分-->
     <transition name="drawer-fade">
       <div class="screen" v-if="option.button.screen">
         <el-menu
+          :unique-opened="true"
           menu-trigger="click"
           mode="vertical"
           class="el-menu-vertical"
-          background-color="#353838"
           active-text-color="white"
+          background-color="#353838"
         >
           <el-menu-item class="caption">
             <span slot="title">排序方式</span>
           </el-menu-item>
           <div class="sortmethod">
-            <label v-for="(sort, sortIndex) in sorts" :key="sortIndex">
+            <label
+              class="controlVertical"
+              v-for="(sort, sortIndex) in sorts"
+              :key="sortIndex"
+            >
               <input
                 type="radio"
                 name="sortIndex"
                 :value="sorts.label"
-                @click="screenClick(sort.label)"
+                @click="screenClick(sort)"
               />
               {{ sort.label }}
-              <br />
-              <br />
             </label>
           </div>
           <hr />
@@ -45,73 +46,37 @@
           </el-menu-item>
           <div class="orientation">
             <label
+              class="aa"
               v-for="(compose, composeIndex) in composes"
               :key="composeIndex"
             >
               <input type="radio" name="composes" />
               {{ compose.label }}
               <icon-svg :icon-class="compose.ico"></icon-svg>
-              <br />
-              <br />
             </label>
           </div>
           <hr />
 
-          <el-submenu index="1" menu-trigger="click" class="race">
-            <template slot="title" class="caption">
-              <span class="caption">民族</span>
-            </template>
-            <el-menu-item-group v-model="nationsort">
-              <label
-                v-for="(nation, nationIndex) in nations"
-                :key="nationIndex"
-              >
-                <input type="radio" name="nations" />
-                <label>{{ nation.label }}</label>
-                <br />
-                <br />
-              </label>
-            </el-menu-item-group>
-          </el-submenu>
-          <hr />
-
-          <el-submenu index="2" menu-trigger="click" class="peopleNum">
+          <el-submenu
+            class="menu"
+            menu-trigger="click"
+            v-for="(title, titleIndex) in titles"
+            :key="titleIndex"
+            :index="titleIndex + ''"
+          >
             <template slot="title">
-              <span class="caption">人数</span>
+              <span class="menu-title">{{ title.Titlename }}</span>
             </template>
-            <label class="man" v-for="people in peoples" :key="people.id">
-              <input type="radio" name="peoples" />
-              {{ people.label }}
-              <br />
-              <br />
-            </label>
-          </el-submenu>
-          <hr />
-
-          <el-submenu index="3" menu-trigger="click" class="race">
-            <template slot="title" class="caption">
-              <span class="caption">年龄</span>
-            </template>
-            <label v-for="(age, ageIndex) in ages" :key="ageIndex">
-              <input type="radio" name="ages" />
-              {{ age.label }}
-              <br />
-              <br />
-            </label>
-          </el-submenu>
-          <hr />
-
-          <el-submenu index="4" menu-trigger="click" class="gender">
-            <template slot="title">
-              <span class="caption">性别</span>
-            </template>
-            <label v-for="(sexual, sexualIndex) in sexuals" :key="sexualIndex">
+            <label
+              class="menu-title-name"
+              v-for="(subtitle, subtitleIndex) in title.children"
+              :key="subtitleIndex"
+            >
               <input type="radio" name="sexuals" />
-              {{ sexual.label }}
-              <br />
-              <br />
+              {{ subtitle.Choicename }}
             </label>
           </el-submenu>
+
           <div
             class="selest"
             :style="{
@@ -122,7 +87,7 @@
               type="info"
               plain
               size="medium"
-              @click="OpenMenu(item)"
+              @click="ClearTags(item)"
               :style="{
                 backgroundColor: this.option.backgroundColor || '#353838'
               }"
@@ -136,15 +101,15 @@
   </div>
 </template>
 
-<script type="text/ecmascript-6">
-export default {
-  name: "slidebar",
+<script>
+import create from "../../core/create";
+export default create({
+  name: "screenimg",
   data() {
     return {
       radio: "1",
-      nationsort: "",
-      value:'',
-      count: 0,
+      value: "",
+      screen: this.option.button.screen || "button-unfold"
     };
   },
   props: {
@@ -155,8 +120,7 @@ export default {
       }
     }
   },
-  watch:{
-  },
+  watch: {},
   computed: {
     drawerWidth: function() {
       return this.option.drawerWidth || "20%";
@@ -167,30 +131,20 @@ export default {
     composes: function() {
       return this.option.composes || [];
     },
-    nations: function() {
-      return this.option.nations || [];
-    },
-    peoples: function() {
-      return this.option.peoples || [];
-    },
-    ages: function() {
-      return this.option.ages || [];
-    },
-    sexuals: function() {
-      return this.option.sexuals || [];
-    },
+    titles: function() {
+      return this.option.titles || [];
+    }
   },
-  components: {
-  },
+  components: {},
   methods: {
-    screen:function(){
-      this.$emit('screen')
+    screenMenu: function() {
+      this.$emit("screen");
     },
-      screenClick(val) {
-        this.$emit("choice",val)
-      }
+    screenClick(val) {
+      this.$emit("choice", val);
+    }
   }
-};
+});
 </script>
 
 <style lang="scss" scoped>
@@ -201,16 +155,34 @@ export default {
   top: 100px;
   position: flex;
 }
-
-.race,
-.gender,
-.peopleNum,
+.menu {
+  text-align: left;
+  color: #dfdfdf;
+  font-size: 13px;
+}
+.menu-title {
+  color: #dfdfdf;
+  font-size: 15px;
+}
+.menu-title-name {
+  text-align: left;
+  color: #dfdfdf;
+  font-size: 13px;
+  margin-left: 13px;
+  margin-right: 170px;
+}
 .sortmethod,
 .orientation {
   text-align: left;
   color: #dfdfdf;
   font-size: 13px;
   margin-left: 13px;
+}
+.controlVertical {
+  margin-right: 170px;
+}
+.aa {
+  margin-right: 160px;
 }
 .caption {
   font-size: 15px;
@@ -219,7 +191,6 @@ export default {
 }
 .screen {
   width: 250px;
-  background-color: #353838;
 }
 .button-unfold {
   width: 250px;
